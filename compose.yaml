@@ -1,0 +1,63 @@
+x-common: &common
+  build: .
+  image: nod-auth:local
+  user: "${LOCAL_UID:-1000}:${LOCAL_GID:-1000}"
+  environment:
+    AUTH_STATE_DIR: /data
+    AUTH_CONFIG: /config/config.toml
+  # Shared SELinux labels allow both setup and bot to use the same host files.
+  volumes:
+    - type: bind
+      source: ./data
+      target: /data
+      bind:
+        create_host_path: false
+        selinux: z
+    - type: bind
+      source: ${AUTH_CONFIG_FILE:-./config.toml}
+      target: /config/config.toml
+      read_only: true
+      bind:
+        create_host_path: false
+        selinux: z
+  read_only: true
+  tmpfs:
+    - /tmp
+  cap_drop:
+    - ALL
+  security_opt:
+    - no-new-privileges:true
+  init: true
+
+services:
+  setup:
+    <<: *common
+    profiles: [setup]
+    stdin_open: true
+    tty: true
+    command: [python, -m, app.setup]
+    volumes:
+      - type: bind
+        source: ./data
+        target: /data
+        bind:
+          create_host_path: false
+          selinux: z
+      - type: bind
+        source: ./apk
+        target: /apk
+        read_only: true
+        bind:
+          create_host_path: false
+          selinux: z
+      - type: bind
+        source: ${AUTH_CONFIG_FILE:-./config.toml}
+        target: /config/config.toml
+        read_only: true
+        bind:
+          create_host_path: false
+          selinux: z
+  bot:
+    <<: *common
+    restart: unless-stopped
+    stop_grace_period: 90s

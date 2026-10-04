@@ -1,0 +1,8 @@
+# PC enrollment uses the same transport versions as requirements.txt / Docker.
+# The Android app separately needs curl-cffi 0.16.3 for its Android wheel.
+curl-cffi==0.13.0
+cffi==2.0.0
+certifi==2026.7.22
+pycparser==3.0
+tls-client==1.0.1
+typing-extensions==4.15.0

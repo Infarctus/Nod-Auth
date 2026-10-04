@@ -1,0 +1,14 @@
+.toolchain/
+.gradle/
+.kotlin/
+**/build/
+local.properties
+*.zip
+*.apk
+*.whl
+*.jks
+*.keystore
+__pycache__/
+.setup-state/
+.test-artifacts/
+.venv/

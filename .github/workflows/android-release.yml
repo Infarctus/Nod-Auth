@@ -1,0 +1,61 @@
+name: Build and release Android APK
+
+on:
+  push:
+    tags:
+      - '**'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: android-release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    if: github.event.deleted != true
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    permissions:
+      contents: write
+    env:
+      ANDROID_HOME: ${{ github.workspace }}/android-app/.toolchain/sdk
+      ANDROID_SDK_ROOT: ${{ github.workspace }}/android-app/.toolchain/sdk
+      ANDROID_NDK_HOME: ${{ github.workspace }}/android-app/.toolchain/sdk/ndk/28.2.13676358
+    steps:
+      - name: Check out tagged source
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Set up Java
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@bec219d24cd3e171d82865faccec33120bb574f4 # v10.1.0
+        with:
+          enable-cache: false
+
+      - name: Bootstrap Android SDK, Python, and CFFI
+        run: python3 android-app/tools/bootstrap.py
+
+      - name: Build installable APK
+        run: android-app/tools/build.sh --no-daemon :app:assembleDebug
+
+      - name: Publish APK to GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          cp android-app/app/build/outputs/apk/debug/app-debug.apk nod-auth-arm64.apk
+          if gh release view "$TAG" > /dev/null 2>&1; then
+            gh release upload "$TAG" nod-auth-arm64.apk --clobber
+          else
+            gh release create "$TAG" nod-auth-arm64.apk \
+              --verify-tag --title "$TAG" --generate-notes
+          fi

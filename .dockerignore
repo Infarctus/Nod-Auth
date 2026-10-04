@@ -1,0 +1,13 @@
+*
+!Dockerfile
+!requirements.txt
+!LICENSE
+!THIRD_PARTY_NOTICES.md
+!PRIVACY.md
+!licenses/
+!licenses/**
+!app/
+!app/**/
+!app/**/*.py
+**/__pycache__/
+**/*.pyc

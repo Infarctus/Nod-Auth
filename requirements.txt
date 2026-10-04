@@ -1,0 +1,7 @@
+curl-cffi==0.13.0
+tls-client==1.0.1
+# tls-client imports this but omits it from its dependency metadata.
+typing-extensions==4.15.0
+
+# Gateway connection for Discord approval buttons (no privileged intents).
+discord.py==2.7.1

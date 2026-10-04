@@ -1,0 +1,32 @@
+# Runtime settings. Setup saves credentials privately in ./data.
+[enrollment]
+# DeviceName sent to Microsoft during fresh activation; existing registrations keep their name.
+# Custom names are experimental: Microsoft decides whether to accept the value.
+device_name = "Pixel 8"
+
+[notifications]
+enabled = true
+provider = "discord" # "telegram" or "discord"
+startup_message = true
+
+[approval]
+timeout_seconds = 90
+max_pending = 20
+# Show the supplied number choices and DENY (or APPROVE/DENY).
+show_number_buttons = true
+# Accept ordinary messages when one sign-in is pending, independently of buttons.
+require_reply = false
+
+[bots.telegram]
+# By default, use the private user/chat paired during setup.
+# To route to a precise private user, set BOTH IDs to that user's numeric ID.
+# The user must first start the bot. Group chats are not supported.
+# chat_id = 123456789
+# user_id = 123456789
+
+[bots.discord]
+# Set notifications.provider = "discord", then run setup for token/ID prompts.
+# Or put both values in an ignored config.local.toml:
+# bot_token = "YOUR_DISCORD_BOT_TOKEN"
+# user_id = "123456789012345678"
+# No server ID or channel ID is needed; approvals use your private DM.
